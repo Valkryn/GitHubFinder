@@ -2,6 +2,8 @@ import React from "react"
 import Navbar from "./components/Navbar"
 import Users from "./components/Users"
 import Search from "./components/Search"
+import Alert from "./components/Alert"
+import {BrowserRouter as Router , Switch , Route} from "react-router-dom"
 import './App.css';
 import axios from "axios"
 
@@ -9,7 +11,8 @@ import axios from "axios"
 class App extends React.Component{
   state ={
     users: [],
-    isLoading: false
+    isLoading: false,
+    alert: null
   }
 
  // async componentDidMount(){
@@ -20,7 +23,9 @@ class App extends React.Component{
  //  this.setState({users:res.data , isLoading:false })
  // }
 
- searchUsers = async text =>{
+
+ // process.env comes from the .env file. It keeps sensitive information secret.
+ searchUsers = async (text) =>{
   this.setState({isLoading:true})
   const res = await axios.get(`https://api.github.com/search/users?q=${text}&client_id=
     ${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=
@@ -29,27 +34,37 @@ class App extends React.Component{
  }
 
  // Clear users from State
-
  clearUsers = () =>{
    this.setState({users:[] , loading: false})
  }
 
-  render(){
-    const { users , isLoading } = this.state
-    return(
-      <div>
-        <Navbar/>
-        <div className="container">
-          <Search
-            searchUsers={this.searchUsers}
-            clearUsers={this.clearUsers}
-            showClearButton={users.length > 0 ? true : false}/>
+// Sends a message to the user
+ setAlert = (msg,type) =>{
+   this.setState({alert: {msg:msg , type:type} })
+   setTimeout( () => this.setState({alert:null}) , 5000 )
+ }
 
-          <Users
-            users={users}
-            loading={isLoading}/>
+  render(){
+    const { users , isLoading  ,alert} = this.state
+    return(
+      
+      <Router>
+        <div>
+          <Navbar/>
+          <div className="container">
+            <Alert alert={alert} />
+            <Search
+              searchUsers={this.searchUsers}
+              clearUsers={this.clearUsers}
+              showClearButton={users.length > 0 ? true : false}
+              setAlert={this.setAlert}/>
+
+            <Users
+              users={users}
+              loading={isLoading}/>
+          </div>
         </div>
-      </div>
+    </Router>
     )
   }
 }
