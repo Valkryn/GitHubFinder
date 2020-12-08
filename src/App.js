@@ -80,7 +80,7 @@ class App extends React.Component{
                     <Search
                       searchUsers={this.searchUsers}
                       clearUsers={this.clearUsers}
-                      showClearButton={users.length > 0 ? true : false}
+                      showClear={users.length > 0 ? true : false}
                       setAlert={this.setAlert}
                     />
                     <Users
