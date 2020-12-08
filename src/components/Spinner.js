@@ -8,7 +8,7 @@ const Spinner = () =>{
             alt="Loading..."
             style={{width : "200px",
             magin: "auto",
-            disple:"block"}} />
+            display:"block"}} />
     </Fragment>
   )
 }
