@@ -1,9 +1,11 @@
-import React from "react"
+import React , {Fragment} from "react"
 import Navbar from "./components/Navbar"
 import Users from "./components/Users"
 import Search from "./components/Search"
 import Alert from "./components/Alert"
 import {BrowserRouter as Router , Switch , Route} from "react-router-dom"
+import About from "./components/About"
+import User from "./components/User"
 import './App.css';
 import axios from "axios"
 
@@ -11,6 +13,7 @@ import axios from "axios"
 class App extends React.Component{
   state ={
     users: [],
+    user:{},
     isLoading: false,
     alert: null
   }
@@ -33,6 +36,14 @@ class App extends React.Component{
   this.setState({users:res.data.items , isLoading:false })
  }
 
+ getUser = async (username) => {
+   this.setState({isLoading:true})
+   const res = await axios.get(`https://api.github.com/users/${username}?client_id=
+     ${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=
+     ${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)
+     this.setState( {user:res.data , isLoading:false})
+ }
+
  // Clear users from State
  clearUsers = () =>{
    this.setState({users:[] , loading: false})
@@ -45,26 +56,38 @@ class App extends React.Component{
  }
 
   render(){
-    const { users , isLoading  ,alert} = this.state
+    const { users , user , isLoading  ,alert } = this.state
     return(
-      
+
       <Router>
         <div>
           <Navbar/>
           <div className="container">
             <Alert alert={alert} />
-            <Search
-              searchUsers={this.searchUsers}
-              clearUsers={this.clearUsers}
-              showClearButton={users.length > 0 ? true : false}
-              setAlert={this.setAlert}/>
-
-            <Users
-              users={users}
-              loading={isLoading}/>
+              <Switch>
+                <Route exact path="/" render={props => (
+                  <Fragment>
+                    <Search
+                      searchUsers={this.searchUsers}
+                      clearUsers={this.clearUsers}
+                      showClearButton={users.length > 0 ? true : false}
+                      setAlert={this.setAlert}
+                    />
+                    <Users
+                      users={users}
+                      loading={isLoading}
+                    />
+                  </Fragment>
+                  )} />
+                <Route exact path="/about" component={About}/>
+                <Route exact path="/user/:login" render={props =>(
+                    <User {...props} getUser={this.getUser} user={user} loading={isLoading} />
+                  )}/>
+              </Switch>
           </div>
         </div>
     </Router>
+
     )
   }
 }
