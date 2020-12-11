@@ -5,6 +5,7 @@ import Repos from "./Repos"
 import {Link} from "react-router-dom"
 
 const User = ({user, loading, getUser, getUserRepos, repos, match}) => {
+
   useEffect( () => {
     getUser(match.params.login)
     getUserRepos(match.params.login)
@@ -59,7 +60,7 @@ const User = ({user, loading, getUser, getUserRepos, repos, match}) => {
                   <p>{bio}</p>
                 </Fragment>
               )}
-              <a href={html_url} target="_blank" className="btn btn-dark my-1">Visit GitHub Profile</a>
+              <a href={html_url} target="_blank" rel="noreferrer" className="btn btn-dark my-1">Visit GitHub Profile</a>
 
               <ul>
                 <li>
